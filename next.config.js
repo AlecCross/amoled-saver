@@ -3,8 +3,12 @@
 const withPWA = require("next-pwa")({
   dest: "public",
   register: true,
-  skipWaiting: true, // Примушує Service Worker оновлюватися без очікування
-  disableDevLogs: true, // Вимикає зайві логи в Dev-режимі
+  skipWaiting: true,
+  disableDevLogs: true,
+  disable: process.env.NODE_ENV === 'development', 
+  buildExcludes: [/\/_next\//], 
+
+
   runtimeCaching: [
     {
       urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
