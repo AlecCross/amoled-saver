@@ -1,48 +1,59 @@
 //next.config.js
 
-const withPWA = require('next-pwa')({
-  dest: 'public',
-  disable: process.env.NODE_ENV === 'development', // Вимкнути PWA для девелопменту
-  register: true, // Реєстрація сервісного працівника автоматично
-  scope: '/', // Права доступу до всього сайту
-  // sw: 'service-worker.js', // Ім'я файлу сервісного працівника
+const withPWA = require("next-pwa")({
+  dest: "public",
+  register: true,
+  skipWaiting: true, // Примушує Service Worker оновлюватися без очікування
+  disableDevLogs: true, // Вимикає зайві логи в Dev-режимі
   runtimeCaching: [
     {
-      urlPattern: /^https:\/\/amoled-saver\.vercel\.app\/.*\.(?:png|jpg|jpeg|svg|gif|webp|css|js)$/, // Шаблон для зображень, CSS, JS
-      handler: 'CacheFirst', // Спочатку шукаємо в кеші
+      urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
+      handler: "CacheFirst",
       options: {
-        cacheName: 'assets-cache',
-        expiration: {
-          maxEntries: 100, // Обмеження кількості елементів у кеші
-          maxAgeSeconds: 60 * 60 * 24 * 7 // Термін життя кешу — 1 тиждень
-        },
+        cacheName: "google-fonts",
+        expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
       },
     },
     {
-      urlPattern: /^https:\/\/amoled-saver\.vercel\.app\/api\//, // Шаблон для API-запитів
-      handler: 'NetworkFirst', // Спочатку намагаємось завантажити з мережі
+      urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/i,
+      handler: "CacheFirst",
       options: {
-        cacheName: 'api-cache',
-        expiration: {
-          maxEntries: 20, // Обмеження кількості елементів у кеші
-          maxAgeSeconds: 60 * 60 * 24, // Кешуємо дані на добу
-        },
+        cacheName: "images",
+        expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 },
       },
     },
     {
-      urlPattern: '/.*/', // Все інше, що не підпадає під попередні правила
-      handler: 'StaleWhileRevalidate', // Повертаємо кешовану версію і перевіряємо на нову
+      urlPattern: /\.(?:js|css)$/i,
+      handler: "StaleWhileRevalidate",
       options: {
-        cacheName: 'default-cache',
-        expiration: {
-          maxEntries: 50, // Обмеження кількості елементів у кеші
-          maxAgeSeconds: 60 * 60 * 24 * 30, // Термін життя кешу — 30 днів
-        },
+        cacheName: "static-resources",
+        expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 30 },
+      },
+    },
+    {
+      urlPattern: "/",
+      handler: "NetworkFirst",
+      options: {
+        cacheName: "start-url",
+        expiration: { maxEntries: 1, maxAgeSeconds: 60 * 60 * 24 },
       },
     },
   ],
 });
 
-module.exports = withPWA({
-  // Конфігурація Next.js
-});
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  async headers() {
+    return [
+      {
+        source: "/(.*)",
+        headers: [
+          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+          { key: "Cross-Origin-Embedder-Policy", value: "require-corp" },
+        ],
+      },
+    ];
+  },
+};
+
+module.exports = withPWA(nextConfig);
