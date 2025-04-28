@@ -25,12 +25,13 @@ export default function Home() {
         if (wakeLock !== null) return;
         const lock = await navigator.wakeLock.request('screen');
         setWakeLock(lock);
-        lock.addEventListener('release', () => setWakeLock(null));
+        lock.addEventListener?.('release', () => setWakeLock(null));
+        lock.addEventListener?.('resume', requestWakeLock); // <- тут
       } catch (err) {
         console.error('Wake Lock error:', err);
       }
     }
-  }
+  }  
 
   const handleActivate = () => {
     if (!document.fullscreenElement) {
@@ -43,6 +44,25 @@ export default function Home() {
   const handleDoubleClick = () => {
     exitFullScreen();
   };
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        requestWakeLock();
+      }
+    };
+  
+    requestWakeLock(); // Перший виклик при монтуванні
+  
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+  
+    return () => {
+      if (wakeLock) {
+        wakeLock.release();
+      }
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, []);
 
   return (
     <div
