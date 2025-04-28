@@ -28,5 +28,21 @@
       "sizes": "32x32",
       "type": "image/x-icon"
     }
+  ],
+  "screenshots": [
+    {
+        "src": "/screenshot-phone-1.webp",
+        "sizes": "1440x2560",
+        "type": "image/webp",
+        "form_factor": "narrow",
+        "label": "Головна сторінка на смартфоні"
+    },
+    {
+        "src": "/screenshot-desktop-1.webp",
+        "sizes": "2560x1440",
+        "type": "image/webp",
+        "form_factor": "wide",
+        "label": "Головна сторінка на десктопі"
+    }
   ]
 }
