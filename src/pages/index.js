@@ -1,49 +1,49 @@
 // src/pages/index.js
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 export default function Home() {
   const [wakeLock, setWakeLock] = useState(null);
   const [showHint, setShowHint] = useState(true);
 
-  const requestFullScreen = () => {
+  const requestFullScreen = useCallback(() => {
     const element = document.documentElement;
     if (element.requestFullscreen) {
       element.requestFullscreen();
     }
-  };
+  }, []);
 
-  const exitFullScreen = () => {
+  const exitFullScreen = useCallback(() => {
     if (document.exitFullscreen) {
       document.exitFullscreen();
     }
-  };
+  }, []);
 
-  async function requestWakeLock() {
+  const requestWakeLock = useCallback(async () => {
     if ('wakeLock' in navigator) {
       try {
         if (wakeLock !== null) return;
         const lock = await navigator.wakeLock.request('screen');
         setWakeLock(lock);
         lock.addEventListener?.('release', () => setWakeLock(null));
-        lock.addEventListener?.('resume', requestWakeLock); // <- тут
+        lock.addEventListener?.('resume', requestWakeLock);
       } catch (err) {
         console.error('Wake Lock error:', err);
       }
     }
-  }  
+  }, [wakeLock]);
 
-  const handleActivate = () => {
+  const handleActivate = useCallback(() => {
     if (!document.fullscreenElement) {
       requestFullScreen();
     }
     requestWakeLock();
-    setShowHint(false); // Підказку забираємо
-  };
+    setShowHint(false);
+  }, [requestFullScreen, requestWakeLock]);
 
-  const handleDoubleClick = () => {
+  const handleDoubleClick = useCallback(() => {
     exitFullScreen();
-  };
+  }, [exitFullScreen]);
 
   useEffect(() => {
     const handleVisibilityChange = () => {
@@ -51,18 +51,18 @@ export default function Home() {
         requestWakeLock();
       }
     };
-  
-    requestWakeLock(); // Перший виклик при монтуванні
-  
+
+    requestWakeLock();
+
     document.addEventListener('visibilitychange', handleVisibilityChange);
-  
+
     return () => {
       if (wakeLock) {
         wakeLock.release();
       }
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, []);
+  }, [requestWakeLock, wakeLock]);
 
   return (
     <div
@@ -90,7 +90,7 @@ export default function Home() {
           borderRadius: '8px',
           animation: 'move 10s infinite alternate ease-in-out',
         }}>
-          Натисніть будь-де для запуску.  
+          Натисніть будь-де для запуску.
           <br />
           Подвійний тап — вихід.
         </div>
