@@ -1,9 +1,9 @@
 // src/pages/index.js
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 
 export default function Home() {
-  const [wakeLock, setWakeLock] = useState(null);
+  const wakeLockRef = useRef(null);
   const [showHint, setShowHint] = useState(true);
 
   const requestFullScreen = useCallback(() => {
@@ -22,16 +22,18 @@ export default function Home() {
   const requestWakeLock = useCallback(async () => {
     if ('wakeLock' in navigator) {
       try {
-        if (wakeLock !== null) return;
+        if (wakeLockRef.current) return; // Якщо вже є — не робимо новий запит
         const lock = await navigator.wakeLock.request('screen');
-        setWakeLock(lock);
-        lock.addEventListener?.('release', () => setWakeLock(null));
+        wakeLockRef.current = lock;
+        lock.addEventListener?.('release', () => {
+          wakeLockRef.current = null;
+        });
         lock.addEventListener?.('resume', requestWakeLock);
       } catch (err) {
         console.error('Wake Lock error:', err);
       }
     }
-  }, [wakeLock]);
+  }, []);
 
   const handleActivate = useCallback(() => {
     if (!document.fullscreenElement) {
@@ -57,12 +59,10 @@ export default function Home() {
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
     return () => {
-      if (wakeLock) {
-        wakeLock.release();
-      }
+      wakeLockRef.current?.release();
       document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [requestWakeLock, wakeLock]);
+  }, [requestWakeLock]);
 
   return (
     <div
