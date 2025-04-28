@@ -28,7 +28,9 @@ export default function Home() {
         lock.addEventListener?.('release', () => {
           wakeLockRef.current = null;
         });
-        lock.addEventListener?.('resume', requestWakeLock);
+        lock.addEventListener?.('release', () => {
+          wakeLockRef.current = null;
+        });        
       } catch (err) {
         console.error('Wake Lock error:', err);
       }
@@ -77,24 +79,26 @@ export default function Home() {
       onDoubleClick={handleDoubleClick}
     >
       {showHint && (
-        <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          color: 'lime',
-          fontSize: '1.5rem',
-          textAlign: 'center',
-          padding: '1rem',
-          background: 'rgba(0,0,0,0.5)',
-          borderRadius: '8px',
-          animation: 'move 10s infinite alternate ease-in-out',
-        }}>
-          Натисніть будь-де для запуску.
-          <br />
-          Подвійний тап — вихід.
-        </div>
-      )}
+  <div style={{
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    color: 'lime',
+    fontSize: '1.5rem',
+    textAlign: 'center',
+    padding: '1rem',
+    background: 'rgba(0,0,0,0.5)',
+    borderRadius: '8px',
+    animation: 'move 10s infinite alternate ease-in-out',
+    opacity: showHint ? 1 : 0, // тут
+    transition: 'opacity 0.5s ease-in-out', // і тут
+  }}>
+    Натисніть будь-де для запуску.
+    <br />
+    Подвійний тап — вихід.
+  </div>
+)}
       <style jsx>{`
         @keyframes move {
           0% { transform: translate(-50%, -50%) translateX(0) translateY(0); }
