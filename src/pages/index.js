@@ -94,9 +94,9 @@ export default function Home() {
     opacity: showHint ? 1 : 0, // тут
     transition: 'opacity 0.5s ease-in-out', // і тут
   }}>
-    Натисніть будь-де для запуску.
+    Press to run FullScreen.
     <br />
-    Подвійний тап — вихід.
+    Double tap — Exit Full Screen.
   </div>
 )}
       <style jsx>{`
