@@ -1,63 +1,37 @@
-//next.config.js
+// @ts-check
+import withSerwistInit from "@serwist/next";
 
-const withPWA = require("next-pwa")({
-  dest: "public",
-  register: true,
-  skipWaiting: true,
-  disableDevLogs: true,
-  disable: process.env.NODE_ENV === 'development', 
-  buildExcludes: [/\/_next\//], 
+// You may want to use a more robust revision to cache
+// files more efficiently.
+// A viable option is `git rev-parse HEAD`.
+const revision = crypto.randomUUID();
 
-
-  runtimeCaching: [
-    {
-      urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
-      handler: "CacheFirst",
-      options: {
-        cacheName: "google-fonts",
-        expiration: { maxEntries: 10, maxAgeSeconds: 60 * 60 * 24 * 365 },
-      },
-    },
-    {
-      urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|ico)$/i,
-      handler: "CacheFirst",
-      options: {
-        cacheName: "images",
-        expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 },
-      },
-    },
-    {
-      urlPattern: /\.(?:js|css)$/i,
-      handler: "StaleWhileRevalidate",
-      options: {
-        cacheName: "static-resources",
-        expiration: { maxEntries: 50, maxAgeSeconds: 60 * 60 * 24 * 30 },
-      },
-    },
-    {
-      urlPattern: "/",
-      handler: "NetworkFirst",
-      options: {
-        cacheName: "start-url",
-        expiration: { maxEntries: 1, maxAgeSeconds: 60 * 60 * 24 },
-      },
-    },
+const withSerwist = withSerwistInit({
+  cacheOnNavigation: true,
+  swSrc: "app/sw.ts",
+  swDest: "public/sw.js",
+  additionalPrecacheEntries: [
+    { url: "/", revision },
+    { url: "/favicon.webp", revision },
+    { url: "/manifest.json", revision },
+    { url: "/robots.txt", revision },
+    { url: "/~offline", revision },
+    { url: "/screenshot-desktop-1.webp", revision },
+    { url: "/screenshot-phone-1.webp", revision },
+    { url: "/hidden.webm", revision },
+    { url: "/icons/icon-144.webp", revision },
+    { url: "/icons/icon-180.webp", revision },
+    { url: "/icons/icon-192.webp", revision },
+    { url: "/icons/icon-256.webp", revision },
+    { url: "/icons/icon-384.webp", revision },
+    { url: "/icons/icon-512.webp", revision },
+    // Додайте інші важливі сторінки/ресурси
   ],
 });
 
-/** @type {import('next').NextConfig} */
+/** @type {import("next").NextConfig} */
 const nextConfig = {
-  async headers() {
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
-          { key: "Cross-Origin-Embedder-Policy", value: "require-corp" },
-        ],
-      },
-    ];
-  },
+  reactStrictMode: true,
 };
 
-module.exports = withPWA(nextConfig);
+export default withSerwist(nextConfig);
