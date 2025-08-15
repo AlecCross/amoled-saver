@@ -1,4 +1,5 @@
 "use client";
+import ClientLayout from "./client-layout";
 import { useEffect, useState, useCallback, useRef } from 'react';
 
 type WakeLockSentinel = {
@@ -69,17 +70,26 @@ export default function Page() {
   }, [requestWakeLock]);
 
   return (
+    <ClientLayout>
     <div
       style={{
-        width: '100vw',
-        height: '100vh',
-        background: 'black',
-        position: 'relative',
-        overflow: 'hidden'
+        width: "100vw",
+        height: "100vh",
+        background: "black",
+        position: "relative",
+        overflow: "hidden",
       }}
       onClick={handleActivate}
       onDoubleClick={handleDoubleClick}
     >
+      <video
+        src="/hidden.webm"
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+      />
       {showHint && (
         <div style={{
           position: 'absolute',
@@ -108,5 +118,6 @@ export default function Page() {
         }
       `}</style>
     </div>
+    </ClientLayout>
   );
 }

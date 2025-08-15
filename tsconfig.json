@@ -1,15 +1,16 @@
 {
   "compilerOptions": {
+    // Твої існуючі опції, наприклад:
     "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext", "webworker"],
+    "lib": ["dom", "dom.iterable", "esnext", "webworker"],  // Додай "webworker" для типів ServiceWorkerGlobalScope
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
-    "forceConsistentCasingInFileNames": true,
+     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
     "esModuleInterop": true,
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -18,8 +19,12 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "types": ["@serwist/next/typings"],  // Додай для типів Serwist (window.serwist, etc.)
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules", "public/sw.js", "public/swe-worker-*.js"]  // Додай, щоб ігнорувати генеровані файли SW
 }

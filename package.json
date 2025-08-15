@@ -1,6 +1,6 @@
 {
   "name": "amoled-saver",
-"version": "1.0.0",
+  "version": "1.0.0",
   "type": "module",
   "license": "MIT",
   "private": true,
@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@serwist/next": "^9.1.1",
+    "@serwist/precaching": "^9.1.1",
+    "@serwist/sw": "^9.1.1",
     "next": "15.4.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
@@ -27,4 +29,3 @@
     "typescript": "5.8.3"
   }
 }
-
