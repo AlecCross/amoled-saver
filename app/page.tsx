@@ -1,5 +1,4 @@
 "use client";
-import ClientLayout from "./client-layout";
 import { useEffect, useState, useCallback, useRef } from 'react';
 
 type WakeLockSentinel = {
@@ -70,7 +69,6 @@ export default function Page() {
   }, [requestWakeLock]);
 
   return (
-    <ClientLayout>
     <div
       style={{
         width: "100vw",
@@ -118,6 +116,5 @@ export default function Page() {
         }
       `}</style>
     </div>
-    </ClientLayout>
   );
 }

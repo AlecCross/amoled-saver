@@ -12,7 +12,6 @@ const withSerwist = withSerwistInit({
   swDest: "public/sw.js",
   additionalPrecacheEntries: [
     { url: "/", revision },
-    { url: "/index.html", revision },
     { url: "/favicon.webp", revision },
     { url: "/manifest.json", revision },
     { url: "/robots.txt", revision },
