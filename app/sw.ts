@@ -53,12 +53,19 @@ self.addEventListener("install", (event) => {
     )
 })
 
+// Перехоплення запитів для негайного offline-fallback (усуває затримку)
 self.addEventListener("fetch", (event) => {
   if (event.request.mode === "navigate") {
     event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match("/~offline").then((response) => {
-          return response || new Response("Offline", { status: 200, statusText: "Offline" });
+      caches.match(event.request).then((cachedResponse) => {
+        if (cachedResponse) {
+          return cachedResponse; // Миттєво повертай з кешу, якщо є
+        }
+        return fetch(event.request).catch(() => {
+          // Якщо мережі немає, повертай fallback
+          return caches.match("/~offline").then((response) => {
+            return response || new Response("Offline", { status: 200, statusText: "Offline" });
+          });
         });
       })
     );
