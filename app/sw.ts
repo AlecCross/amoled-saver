@@ -1,6 +1,6 @@
-import { defaultCache } from "@serwist/next/worker"
-import type { PrecacheEntry, SerwistGlobalConfig } from "serwist"
-import { Serwist } from "serwist"
+import { defaultCache } from "@serwist/next/worker";
+import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
+import { Serwist } from "serwist";
 
 // This declares the value of `injectionPoint` to TypeScript.
 // `injectionPoint` is the string that will be replaced by the
@@ -18,7 +18,7 @@ const serwist = new Serwist({
     precacheEntries: self.__SW_MANIFEST,
     skipWaiting: true,
     clientsClaim: true,
-    navigationPreload: true,
+    navigationPreload: true, // Прискорює перехоплення запитів
     disableDevLogs: true,
     precacheOptions: {
         cleanupOutdatedCaches: true,
@@ -52,5 +52,17 @@ self.addEventListener("install", (event) => {
         ),
     )
 })
+
+self.addEventListener("fetch", (event) => {
+  if (event.request.mode === "navigate") {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match("/~offline").then((response) => {
+          return response || new Response("Offline", { status: 200, statusText: "Offline" });
+        });
+      })
+    );
+  }
+});
 
 serwist.addEventListeners()
